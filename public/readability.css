@@ -1,0 +1,161 @@
+/* Readable type, predictable spacing, and flexible layouts at every text size. */
+:root {
+  --muted: #535f56;
+  --body-size: 1rem;
+}
+
+body { font-size: var(--body-size); line-height: 1.7; }
+p { line-height: 1.8; }
+h1, h2, h3 { text-wrap: balance; }
+h2 { font-weight: 600; letter-spacing: -1.2px; }
+h3 { line-height: 1.4; }
+.eyebrow, .hero .eyebrow { font-size: 12px; line-height: 1.6; letter-spacing: 1.5px; }
+.green { color: #526444; }
+.section-wrap { padding-top: 88px; padding-bottom: 88px; }
+.intro-copy, .service-card p, .owner-copy > p:not(.eyebrow),
+.check-list li, .heading-description, .process-grid p,
+.resident-section p:not(.eyebrow), details p, .contact-copy > p:not(.eyebrow),
+dialog p:not(.eyebrow), dialog li { font-size: 16px; line-height: 1.8; }
+.intro-copy p, .owner-copy > p, .contact-copy > p, .service-areas p { max-width: 60ch; }
+.hero-description { font-size: 18px; max-width: 53ch; line-height: 1.8; }
+.button, .owner-copy .button, .hero-actions .button,
+.text-link, .hero-actions .text-link, .underlined-link, .card-link { font-size: 15px; line-height: 1.5; }
+.button { min-height: 48px; font-weight: 600; }
+.text-link, .underlined-link, .card-link { min-height: 44px; }
+.underlined-link, .card-link { gap: 18px; }
+.button > span, .underlined-link > span, .card-link > span { flex-shrink: 0; }
+.service-card { display: flex; flex-direction: column; padding: 32px 28px 25px; }
+.service-card h3, .process-grid h3 { font-size: 23px; }
+.service-card p { max-width: none; }
+.service-card .card-link { margin-top: auto; }
+.card-number { font-size: 12px; color: #59654e; }
+.section-heading > div { min-width: 0; }
+.section-heading > .underlined-link { flex-shrink: 0; }
+.heading-description { max-width: 31ch; }
+.process-grid { gap: 36px; }
+.check-list li { padding: 13px 0; }
+.owner-copy > p:not(.eyebrow), .contact-copy > p:not(.eyebrow) { color: #e0e6df; }
+.owner-copy { padding: 64px 10%; }
+.owner-copy h2, .contact h2 { font-size: clamp(34px, 3.25vw, 46px); }
+.owner-copy .button { max-width: 100%; }
+.photo-note { font-size: 14px; }
+.resident-section p:not(.eyebrow) { max-width: 48ch; }
+.resident-links small { font-size: 11px; line-height: 1.6; letter-spacing: 1.2px; }
+.resident-links > a { font-size: 21px; }
+summary { font-size: 17px; font-weight: 500; line-height: 1.6; padding: 23px 0; }
+summary span { flex-shrink: 0; }
+details p { padding-right: 0; }
+details p a { text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.faq { grid-template-columns: .9fr 1.2fr; gap: 7%; }
+.faq h2, .intro h2 { font-size: clamp(34px, 3.2vw, 44px); }
+label { font-size: 15px; font-weight: 500; letter-spacing: 0; }
+input, select, textarea { font-size: 16px; line-height: 1.5; padding: 13px 12px; }
+select { height: auto; min-height: 52px; }
+textarea { min-height: 140px; }
+.form-note { font-size: 13px; line-height: 1.7; }
+#form-status { font-size: 16px; }
+.contact { gap: 7%; }
+.contact > *, .resident-section > *, .service-areas > * { min-width: 0; }
+.contact-phone small { font-size: 12px; letter-spacing: 1.2px; }
+.contact-wordmark { font-size: 14px; }
+.contact-phone.contact-email strong { font-size: clamp(18px, 1.8vw, 24px); }
+.site-footer > p, .site-footer > a:last-of-type { font-size: 14px; }
+.footer-bottom { font-size: 13px; line-height: 1.7; }
+.site-header nav { font-size: 15px; gap: 24px; }
+.header-phone { font-size: 14px; }
+.header-phone > span { font-size: 10px; }
+.brand small { font-size: 10px; letter-spacing: 2.5px; }
+.site-footer > .brand small { font-size: 9px; letter-spacing: 1.7px; }
+.hero {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: max(740px, calc(100svh - 154px));
+  max-height: none;
+}
+.hero-content { padding-top: 72px; padding-bottom: 45px; }
+.hero h1 {
+  font-size: clamp(48px, 5.6vw, 78px);
+  max-width: 17ch;
+  line-height: 1.14;
+  letter-spacing: -2px;
+  text-wrap: initial;
+}
+.hero h1 em { letter-spacing: -1.4px; }
+.hero-shade { background: linear-gradient(90deg, #0c1b15e6 0%, #102119a8 55%, #12201933 100%), linear-gradient(0deg, #09171199, transparent 45%); }
+.hero-bottom { position: relative; left: auto; right: auto; bottom: auto; z-index: 1; margin: auto 6% 25px; font-size: 12px; gap: 22px; }
+.hero-bottom a { font-size: 13px; line-height: 1.6; }
+.hero-caption { font-size: 12px; }
+.hero-actions { flex-wrap: wrap; }
+.service-areas { display: grid; grid-template-columns: 1.1fr 1fr; gap: 9%; border-bottom: 1px solid var(--line); }
+.service-areas h2 { font-size: clamp(34px, 3.2vw, 44px); }
+.service-areas h3 { font-size: 20px; }
+.service-areas p { color: var(--muted); }
+.area-list { display: grid; grid-template-columns: 1fr 1fr; list-style: none; padding: 0; margin: 20px 0; gap: 0 25px; }
+.area-list li { padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 16px; }
+.area-note { font-size: 15px; }
+
+@media (max-width: 1150px) {
+  .section-heading { align-items: flex-start; flex-direction: column; gap: 20px; }
+  .heading-description { max-width: 52ch; }
+  .service-grid { gap: 16px; }
+  .service-card { padding: 28px 21px 22px; }
+  .service-card h3 { font-size: 21px; }
+}
+
+@media (max-width: 1000px) {
+  html { scroll-padding-top: 114px; }
+  .site-header { height: 110px; padding: 32px 22px 0; }
+  .site-header nav { display: none; position: absolute; top: 110px; left: 0; right: 0; padding: 22px; background: var(--paper); border-bottom: 1px solid var(--line); box-shadow: 0 15px 20px #0001; align-items: stretch; gap: 8px; max-height: calc(100svh - 110px); overflow-y: auto; }
+  .site-header nav.open { display: flex; flex-direction: column; }
+  .site-header nav > a:not(.button) { padding: 12px; }
+  .nav-cta { margin: 10px 0 0; }
+  .menu-toggle { display: flex; flex-direction: column; justify-content: center; gap: 7px; background: transparent; border: 0; width: 44px; height: 44px; padding: 10px; }
+  .menu-toggle span { height: 1px; width: 24px; background: var(--ink); transition: transform .2s; }
+  .menu-toggle[aria-expanded=true] span:first-child { transform: translateY(4px) rotate(45deg); }
+  .menu-toggle[aria-expanded=true] span:last-child { transform: translateY(-4px) rotate(-45deg); }
+}
+
+@media (max-width: 860px) {
+  .section-wrap { padding: 64px 27px; }
+  .hero { min-height: 720px; height: auto; }
+  .hero-content { padding: 56px 27px 40px; }
+  .hero h1 { font-size: clamp(40px, 8vw, 62px); letter-spacing: -1.4px; }
+  .hero .eyebrow { font-size: 11px; letter-spacing: 1px; flex-wrap: wrap; }
+  .hero .eyebrow .small-line { display: none; }
+  .hero-description { font-size: 17px; max-width: 48ch; }
+  .hero-actions { gap: 20px; }
+  .hero-actions .button { padding: 16px 18px; gap: 18px; max-width: 100%; }
+  .hero-bottom { margin: auto 27px 22px; }
+  .hero-bottom > span { font-size: 10px; line-height: 1.6; letter-spacing: 1px; }
+  .hero-bottom a { font-size: 0; }
+  .hero-bottom a span { font-size: 20px; }
+  .hero-shade { background: linear-gradient(90deg, #0c1b15e8, #10211999); }
+  .intro h2, .faq h2, .owner-copy h2, .contact h2, .service-areas h2 { font-size: clamp(31px, 5.5vw, 40px); }
+  .service-card { padding: 28px; }
+  .service-card h3, .process-grid h3 { font-size: 23px; }
+  .owner-copy { padding: 48px 27px; }
+  .owner-copy .button { gap: 16px; }
+  .photo-note { font-size: 13px; }
+  .faq, .service-areas { grid-template-columns: 1fr; gap: 28px; }
+  .resident-links > a { font-size: 19px; }
+  .contact-wordmark { display: none; }
+  .site-header .brand small { font-size: 9px; letter-spacing: 1.9px; }
+  .site-footer > .brand small { font-size: 8px; letter-spacing: 1.1px; }
+  .footer-bottom { font-size: 12px; }
+}
+
+@media (max-width: 520px) {
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .contact-phone { gap: 13px; }
+  .contact-phone.contact-email strong { font-size: 18px; }
+  .contact-phone svg { width: 22px; height: 22px; }
+  .area-list { gap: 0 16px; }
+  .underlined-link { max-width: 100%; }
+  .site-footer { align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .menu-toggle span { transition: none; }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "champrealtestate",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node site/build.cjs",
+    "predev": "node site/build.cjs",
+    "dev": "node server.cjs",
+    "prestart": "node site/build.cjs",
+    "start": "node server.cjs",
+    "pretest": "node site/build.cjs",
+    "test": "node --test test.cjs"
+  }
+}

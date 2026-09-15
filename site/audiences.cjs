@@ -1,0 +1,109 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const { faqs, articles, links } = require('./content.cjs');
+const { realEstateUrl, realEstateSection } = require('./realestate.cjs');
+
+const configs = {
+  renters: {
+    label: 'For renters', title: 'Colorado Springs Rentals & Resident Support | Summit Peak',
+    description: 'Find your next Colorado Springs rental and get direct resident support from veteran-owned Summit Peak. Clear applications, move-in help, and one local contact.',
+    heading: 'Your next home.<br><em>A simpler start.</em>',
+    intro: 'Find your footing in Colorado Springs with a team that keeps renting personal. From your first question to everyday support, Summit Peak is your direct point of contact.',
+    photo: 'interior.jpg', alt: 'A comfortable living room with natural light',
+    interests: ['Rental availability', 'Resident question', 'Something else'],
+    questions: ['find-home', 'application', 'renter-contact', 'buy-home', 'locations', 'military', 'orders', 'veteran-owned'],
+    guides: ['military-renting-colorado-springs', 'renter-screening-clear-communication'],
+    nav: [['Find a home', '#contact'], ['Resident support', '#support'], ['Military moves', 'military/'], ['Q&A', 'faq/'], ['Guides', 'guides/']],
+    contactTitle: 'Let’s find your next step.', contactIntro: 'Looking for a home? Tell us your preferred location, budget, and move-in date. Already a resident? Let us know how we can help.', message: 'Share your rental needs or a routine question about your home…', button: 'Ask about a rental'
+  },
+  owners: {
+    label: 'For property owners', title: 'Colorado Springs Landlord & Property Management Services | Summit Peak',
+    description: 'Simplify rental ownership in Colorado Springs with careful renter screening, direct communication, and one-month rent protection from veteran-owned Summit Peak.',
+    heading: 'Your property.<br><em>Less on your plate.</em>',
+    intro: 'Keep the investment. Hand off the everyday renter conversations. Summit Peak brings careful screening, direct communication, and local experience to your Colorado Springs rental.',
+    photo: 'home.jpg', alt: 'A contemporary residential property with a sunlit terrace',
+    interests: ['Property management', 'Leasing & placement', 'Owner support', 'Something else'],
+    questions: ['communication', 'screening', 'rent-protection', 'fees', 'away', 'sell-home', 'locations', 'veteran-owned'],
+    guides: ['pcs-rental-property-checklist', 'one-month-rent-protection', 'renter-screening-clear-communication'],
+    nav: [['Our services', '#services'], ['Rent protection', '#protection'], ['Military moves', 'military/'], ['Q&A', 'faq/'], ['Guides', 'guides/']],
+    contactTitle: 'Let’s make ownership easier.', contactIntro: 'Tell us about your property, its location, and the responsibilities you want to hand off. We’ll discuss the right support and the details before you start.', message: 'Tell us about your property and management needs…', button: 'Discuss my property'
+  }
+};
+
+const selector = `<dialog id="audience-dialog" aria-labelledby="audience-title" aria-describedby="audience-description"><button class="audience-close" type="button" aria-label="Close experience selection">×</button><img src="/assets/mark.svg" width="68" height="56" alt=""><p class="eyebrow green">WELCOME TO SUMMIT PEAK</p><h2 id="audience-title" tabindex="-1" autofocus>Let’s make this<br><em>about you.</em></h2><p id="audience-description">How can we help? Choose the experience that fits your next step.</p><div class="audience-options"><a href="/renters/" data-select-audience="renters"><span class="choice-icon" aria-hidden="true">⌂</span><strong>I’m a renter</strong><span>Find a home, plan a move, or get help with your rental.</span><b>Explore renting <span aria-hidden="true">↗</span></b></a><a href="/owners/" data-select-audience="owners"><span class="choice-icon" aria-hidden="true">◇</span><strong>I’m an owner / landlord</strong><span>Manage a property, find renters, and simplify ownership.</span><b>Explore property management <span aria-hidden="true">↗</span></b></a></div><p class="audience-footnote">You can switch at any time. We remember your choice for this tab.</p><button class="audience-skip" type="button">Not sure yet? Explore the main site</button></dialog>`;
+
+function bar(audience) {
+  return `<div class="audience-bar"><span data-audience-label>${audience ? configs[audience].label : 'Your Summit Peak experience'}</span><button type="button" data-open-audience>Change experience <span aria-hidden="true">⇄</span></button></div>`;
+}
+
+function scopeLinks(html, audience) {
+  const root = '/' + audience + '/';
+  const allowedIds = new Set(configs[audience].questions);
+  return html.replace(/href="([^"]+)"/g, (match, href) => {
+    const mapping = { '/#contact': root + '#contact', '/#services': root + (audience === 'owners' ? '#services' : '#process'), '/#service-areas': root + '#service-areas', '/#owners': '/owners/', '/#residents': '/renters/', '/military/': root + 'military/', '/guides/': root + 'guides/', '/faq/': root + 'faq/' };
+    if (href.startsWith('/faq/#') && allowedIds.has(href.split('#')[1])) return `href="${root}faq/#${href.split('#')[1]}"`;
+    return mapping[href] ? `href="${mapping[href]}"` : match;
+  });
+}
+
+function decorate(html, audience = '') {
+  const root = '/' + audience + '/';
+  html = html.replace(/(<nav class="footer-nav"[^>]*>[\s\S]*?)(<\/nav>)/, `$1<a href="${realEstateUrl}">Buy or sell with Champ Real Estate <span aria-hidden="true">↗</span></a>$2`);
+  if (audience) {
+    const nav = configs[audience].nav.map(([title, route]) => `<a href="${root + route}">${title}</a>`).join('');
+    html = html.replace(/<nav id="navigation"[^>]*>[\s\S]*?<\/nav>/, `<nav id="navigation" aria-label="${configs[audience].label} navigation">${nav}<a class="button button-dark nav-cta" href="${root}#contact">Contact us <span aria-hidden="true">↗</span></a></nav>`);
+    html = html.replace(/class="brand" href="\/"/g, `class="brand" href="${root}"`);
+    html = scopeLinks(html, audience);
+    html = html.replace('<body>', `<body data-audience="${audience}">`);
+  }
+  html = html.replace('</head>', '<link rel="stylesheet" href="/audience.css"><script src="/audience-state.js" defer></script><script src="/audience.js" defer></script></head>');
+  html = html.replace('</header>', '</header>' + bar(audience));
+  html = html.replace('</body>', selector + '</body>');
+  return html;
+}
+
+function areas() {
+  return `<section class="section-wrap audience-areas" id="service-areas"><p class="eyebrow green">COLORADO SPRINGS &amp; EL PASO COUNTY</p><h2>Local support.<br>Across the places you call home.</h2><p>Colorado Springs · Fountain · Manitou Springs · Monument · Palmer Lake · Calhan · Falcon · Peyton · Black Forest</p><a class="underlined-link" href="#contact">Ask about your location ↗</a></section>`;
+}
+
+function buildAudiences({ root, page, write, card, routes }) {
+  const originalHome = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const formTemplate = originalHome.match(/<form id="inquiry-form"[\s\S]*?<\/form>/)[0];
+  for (const [audience, config] of Object.entries(configs)) {
+    const selectedArticles = config.guides.map(slug => articles.find(article => article.slug === slug));
+    const selectedQuestions = config.questions.map(id => faqs.find(item => item.id === id));
+    let form = formTemplate.replace(/<select name="interest" id="interest">[\s\S]*?<\/select>/, `<select name="interest" id="interest">${config.interests.map(interest => `<option>${interest.replace('&', '&amp;')}</option>`).join('')}</select>`);
+    form = form.replace('Tell us about your property or what you’re looking for…', config.message);
+    const contact = `<section class="contact section-wrap" id="contact"><div class="contact-copy"><p class="eyebrow">LET’S TALK</p><h2>${config.contactTitle}</h2><p>${config.contactIntro}</p><a class="contact-phone" href="tel:+17196237432"><span><small>GIVE US A CALL</small><strong>719-623-7432</strong></span></a><a class="contact-phone contact-email" href="mailto:contact@summitpeakpm.com"><span><small>SEND US AN EMAIL</small><strong>contact@summitpeakpm.com</strong></span></a></div>${form}</section>`;
+    const hero = `<section class="hero audience-hero"><img class="hero-photo" src="/assets/${config.photo}" alt="${config.alt}" fetchpriority="high"><div class="hero-shade"></div><div class="hero-content"><p class="eyebrow">${config.label.toUpperCase()} · COLORADO SPRINGS</p><h1>${config.heading}</h1><p class="hero-description">${config.intro}</p><div class="hero-actions"><a class="button button-cream" href="#contact">${config.button} <span aria-hidden="true">↗</span></a><a class="text-link" href="${audience === 'renters' ? '#support' : '#services'}">${audience === 'renters' ? 'I’m already a resident' : 'Explore our services'} ↓</a></div></div><div class="hero-bottom"><span>VETERAN OWNED. PEOPLE FIRST.</span><a href="/about/">Meet your local team ↗</a></div></section>`;
+    const renterContent = `<div class="trust-strip"><span>A clear rental process</span><span>One direct point of contact</span><span>Veteran owned &amp; operated</span></div><section class="intro section-wrap"><div><p class="eyebrow green">ROOM FOR YOUR NEXT CHAPTER</p><h2>More clarity.<br>Less back-and-forth.</h2></div><div class="intro-copy"><p>A home search comes with enough questions. Summit Peak helps you understand your options, what to expect when applying, and who to contact after you move in.</p><p>You work directly with our team. No guessing whether to call the owner, the leasing contact, or someone else.</p></div></section><section class="section-wrap renter-process" id="process"><p class="eyebrow green">FINDING YOUR NEXT HOME</p><h2>A straightforward path to renting.</h2><div class="process-grid"><article><span>01</span><h3>Tell us what you need</h3><p>Share your preferred location, move-in window, budget, and household needs. Ask us about current availability.</p></article><article><span>02</span><h3>Understand the application</h3><p>Review the property’s current criteria, fees, and required documents before applying. Use the submission method we provide.</p></article><article><span>03</span><h3>Move in with a clear contact</h3><p>Know what needs to happen before receiving keys and how to reach Summit Peak when a question comes up.</p></article></div></section><section class="resident-support section-wrap" id="support"><div><p class="eyebrow green">ALREADY A RESIDENT?</p><h2>Your home.<br>A real person to help.</h2><p>Bring routine questions about your rental directly to Summit Peak. We handle communication with the owner so you have one place to turn.</p><a class="button button-dark" href="#contact" data-interest="Resident question">Ask a resident question ↗</a></div><div class="resident-support-note"><h3>Have an urgent maintenance issue?</h3><p>Follow the urgent-contact instructions in your lease or resident materials. The general inquiry form is not an emergency channel.</p><a class="underlined-link" href="tel:+17196237432">Call Summit Peak ↗</a></div></section>`;
+    const ownerContent = `<div class="trust-strip"><span>Carefully vetted renters</span><span>Direct communication through us</span><span>Veteran owned &amp; operated</span></div><section class="intro section-wrap"><div><p class="eyebrow green">FOR PROPERTY OWNERS &amp; LANDLORDS</p><h2>Stay informed.<br>Step back from the everyday.</h2></div><div class="intro-copy"><p>Rental ownership should not require you to manage every conversation. Summit Peak connects you with carefully vetted renters and becomes the direct contact for day-to-day questions.</p><p>Whether your property is across town or you are stationed elsewhere, start with a clear plan for management, updates, and owner approvals.</p></div></section><section class="section-wrap" id="services"><p class="eyebrow green">YOUR PROPERTY, SUPPORTED</p><h2>Management that makes room for your life.</h2><div class="service-grid"><article class="service-card"><p class="eyebrow green">01 / PLACEMENT</p><h3>Careful renter screening</h3><p>Connect with vetted applicants through an organized leasing process. Discuss the current criteria and placement steps with our team.</p></article><article class="service-card"><p class="eyebrow green">02 / COMMUNICATION</p><h3>We handle the conversations</h3><p>Renters contact Summit Peak directly. You receive the updates and decisions that need your attention through us.</p></article><article class="service-card"><p class="eyebrow green">03 / FOLLOW-THROUGH</p><h3>Local support while you’re away</h3><p>Agree on property-care responsibilities, communication, and approvals with a team serving Colorado Springs and El Paso County.</p></article></div></section><section class="protection-section section-wrap" id="protection"><div class="protection-number"><strong>1</strong><span>MONTH OF<br>RENT PROTECTION</span></div><div><p class="eyebrow green">WHEN A RENTER MISSES PAYMENT</p><h2>A plan.<br>And a little more peace of mind.</h2><p>Summit Peak provides one month of rent protection for the owner while working to resolve the unpaid balance or coordinating the appropriate legal process.</p><p class="coverage-note">Contact Summit Peak for written eligibility, timing, and exclusions. The benefit does not guarantee every loss is covered or promise a particular legal outcome.</p><a class="underlined-link" href="/owners/faq/#rent-protection">Understand rent protection ↗</a></div></section>`;
+    const military = `<section class="military-story section-wrap"><p class="eyebrow">MILITARY FAMILIES &amp; VETERANS</p><h2>${audience === 'renters' ? 'New assignment.<br><em>Make room for home.</em>' : 'Duty takes you elsewhere.<br><em>We stay focused on home.</em>'}</h2><p>${audience === 'renters' ? 'Moving to Colorado Springs? Start with your duty location and timeline. Our veteran-owned team can help you plan a rental search with clear next steps.' : 'Leaving Colorado Springs on a PCS? Prepare your rental-property handoff and let Summit Peak handle renter communication while you are away.'}</p><a class="button button-cream" href="/${audience}/military/">${audience === 'renters' ? 'Plan your military move' : 'Prepare your property for a PCS'} ↗</a></section>`;
+    const guides = `<section class="related-guides section-wrap"><div class="section-heading"><div><p class="eyebrow green">GUIDES FOR ${audience.toUpperCase()}</p><h2>${audience === 'renters' ? 'Get comfortable with the next step.' : 'Make informed ownership decisions.'}</h2></div><a class="underlined-link" href="/${audience}/guides/">Browse your guides ↗</a></div><div class="guide-grid">${selectedArticles.slice(0, 2).map(card).join('')}</div></section>`;
+    const faqPreview = `<section class="home-questions section-wrap"><div><p class="eyebrow green">YOUR QUESTIONS</p><h2>${audience === 'renters' ? 'What to know before you rent.' : 'Know what management includes.'}</h2><a class="underlined-link" href="/${audience}/faq/">All ${audience === 'renters' ? 'renter' : 'owner'} questions ↗</a></div><div class="faq-list">${selectedQuestions.slice(0, 3).map(item => `<details><summary>${item.q}<span aria-hidden="true">+</span></summary>${scopeLinks(item.a, audience)}</details>`).join('')}</div></section>`;
+    let home = page(config.title, config.description, hero + (audience === 'renters' ? renterContent : ownerContent) + military + areas() + faqPreview + guides + realEstateSection(audience) + contact, '', null, 'website', false);
+    home = home.replace('</head>', '<script src="/inquiry.js" defer></script></head>');
+    write(audience, decorate(home, audience));
+    const qBody = `<section class="page-hero section-wrap"><p class="eyebrow green">${config.label.toUpperCase()}</p><h1>${audience === 'renters' ? 'Renting, explained.' : 'Ownership, explained.'}<br><em>Your questions answered.</em></h1><p class="page-intro">${audience === 'renters' ? 'Rental searches, applications, resident support, and military moves.' : 'Screening, management, communication, and rent protection.'}</p></section><section class="qa-section section-wrap" data-resource="faq"><div class="resource-tools" hidden><label class="search-label" for="question-search">Search ${audience === 'renters' ? 'renter' : 'owner'} questions<input id="question-search" type="search" placeholder="What would you like to know?"></label><p class="result-count" role="status" aria-live="polite"></p></div><div class="faq-list">${selectedQuestions.map(item => `<details id="${item.id}" data-category="${item.group}"><summary>${item.q}<span aria-hidden="true">+</span></summary><div class="faq-answer">${scopeLinks(item.a, audience)}</div></details>`).join('')}</div><p class="empty-state" hidden>No matching questions. Try a different search.</p></section>`;
+    const faqSchema = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: selectedQuestions.map(item => ({ '@type': 'Question', name: item.q, acceptedAnswer: { '@type': 'Answer', text: item.a.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() } })) };
+    write(audience + '/faq', decorate(page(`${audience === 'renters' ? 'Renter' : 'Landlord'} Q&A | Colorado Springs | Summit Peak`, config.description, qBody, '', faqSchema, 'website', false) + '', audience));
+    const guideBody = `<section class="page-hero section-wrap"><p class="eyebrow green">${config.label.toUpperCase()}</p><h1>${audience === 'renters' ? 'Find your home.<br><em>Know your next step.</em>' : 'Care for your investment.<br><em>Start with good information.</em>'}</h1><p class="page-intro">Practical Colorado Springs guides selected for ${audience === 'renters' ? 'renters and military families' : 'property owners and landlords'}.</p></section><section class="section-wrap"><div class="guide-grid">${selectedArticles.map(card).join('')}</div></section>`;
+    write(audience + '/guides', decorate(page(`${audience === 'renters' ? 'Renter & Moving' : 'Landlord & Property Management'} Guides | Summit Peak`, config.description, guideBody, '', null, 'website', false), audience));
+    const militaryArticle = selectedArticles[0];
+    const militaryBody = `<section class="page-hero section-wrap"><p class="eyebrow green">VETERAN OWNED &amp; OPERATED</p><h1>${audience === 'renters' ? 'Moving to Colorado Springs?<br><em>Let’s find your footing.</em>' : 'Orders to move.<br><em>A plan for your property.</em>'}</h1><p class="page-intro">${audience === 'renters' ? 'Personal rental support for military members, veterans, and their families.' : 'Local property management for military owners leaving the Colorado Springs area.'}</p></section><section class="intro section-wrap"><div><h2>${audience === 'renters' ? 'Your duty location.<br>Your timeline. Your home.' : 'Make the handoff<br>before moving day.'}</h2></div><div class="intro-copy"><p>${audience === 'renters' ? 'Tell us where you need to report, your preferred move-in date, and what you need in a rental. We can discuss current options and the application process so you know what comes next.' : 'Prepare access instructions, property information, and communication preferences before your PCS. We handle renter conversations while you are away and keep you informed about decisions that need your attention.'}</p><p>Led by a U.S. Army veteran, Summit Peak serves military and civilian households alike. We are an independent business, not a government housing office or an endorsed installation partner.</p><a class="button button-dark" href="/guides/${militaryArticle.slug}/">Read your military move guide ↗</a></div></section><section class="section-wrap"><p class="eyebrow green">HELPFUL OFFICIAL RESOURCES</p><div class="resource-grid"><a href="${links.pcs}"><h3>Military OneSource</h3><p>Official PCS planning resources.</p><span aria-hidden="true">↗</span></a><a href="${links.carson}"><h3>Fort Carson housing</h3><p>Official housing information and contacts.</p><span aria-hidden="true">↗</span></a><a href="${links.spaceforce}"><h3>Peterson &amp; Schriever</h3><p>The official installation resource directory.</p><span aria-hidden="true">↗</span></a></div></section>`;
+    write(audience + '/military', decorate(page(`${audience === 'renters' ? 'Military Rental & PCS Move Support' : 'Military Landlord & PCS Property Management'} | Colorado Springs`, config.description, militaryBody, '', null, 'website', false), audience));
+  }
+  // Keep established URLs usable while offering a switch on every shared page.
+  for (const route of routes) {
+    if (route.startsWith('/renters/') || route.startsWith('/owners/')) continue;
+    const filename = path.join(root, route, 'index.html');
+    let html = fs.readFileSync(filename, 'utf8');
+    if (route === '/') html = html.replace('<section class="contact section-wrap"', realEstateSection() + '<section class="contact section-wrap"');
+    if (route === '/about/') html = html.replace('<section class="page-cta">', realEstateSection('about') + '<section class="page-cta">');
+    if (route === '/') {
+      html = html.replace('<main id="main">', '<main id="main"><section class="entry-paths section-wrap"><p class="eyebrow green">YOUR EXPERIENCE, YOUR WAY</p><h2>How can we help you today?</h2><div class="entry-path-links"><a href="/renters/" data-select-audience="renters">I’m a renter <span aria-hidden="true">↗</span></a><a href="/owners/" data-select-audience="owners">I’m an owner / landlord <span aria-hidden="true">↗</span></a></div></section>');
+    }
+    fs.writeFileSync(filename, decorate(html));
+  }
+}
+module.exports = { buildAudiences, configs };
