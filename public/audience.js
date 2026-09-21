@@ -23,7 +23,8 @@
         const link = document.createElement('a'); link.textContent = label; link.href = prefix + route; return link;
       });
       const contact = document.createElement('a'); contact.className = 'button button-dark nav-cta'; contact.href = prefix + '#contact'; contact.textContent = 'Contact us ↗';
-      nav.replaceChildren(...items, contact);
+      const extras = nav.querySelector('.navigation-extras');
+      nav.replaceChildren(...items, contact, ...(extras ? [extras] : []));
       document.querySelectorAll('a[href]').forEach(link => {
         if (!link.closest('#audience-dialog')) link.setAttribute('href', state.contextualLink(link.getAttribute('href'), audience));
       });
@@ -60,8 +61,8 @@
   dialog?.addEventListener('cancel', event => { event.preventDefault(); dismissChoice(); });
   dialog?.addEventListener('close', () => {
     document.body.classList.remove('audience-modal-open');
-    if (previousFocus?.isConnected && previousFocus !== document.body) previousFocus.focus();
-    else switchButton?.focus();
+    if (previousFocus?.isConnected && previousFocus !== document.body && !previousFocus.closest?.('#navigation')) previousFocus.focus();
+    else document.querySelector('.menu-toggle')?.focus();
   });
   document.querySelectorAll('[data-select-audience]').forEach(link => link.addEventListener('click', () => {
     state.save(storage, link.dataset.selectAudience);

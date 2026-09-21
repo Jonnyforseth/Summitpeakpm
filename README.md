@@ -34,6 +34,8 @@ The navigation, service dialogs, FAQ accordion, interest selection, and contact 
 
 ## Readability and search information
 
+The compact header uses `public/header.css` (September 21, 2026): one 72px sticky row on desktop and 64px on mobile, with the brand, phone number, and menu button. Navigation, veteran-owned text, and the audience switch are inside the dropdown on all screen sizes. The menu closes on outside clicks, Escape, link selection, and keyboard focus moving outside. Shared-page navigation preserves the audience-switch controls when adapting to a saved experience. Header and article scroll offsets match the shorter row.
+
 `public/readability.css` contains the larger text sizes, contrast improvements, flexible hero layout, and service-area styling. Body copy is generally 16–18px, with larger labels and controls. Reduced-motion preferences remain supported.
 
 The page title, description, social metadata, visible headings, and Organization JSON-LD describe property management in Colorado Springs and El Paso County. The service area, phone, and email were supplied by the owner. Nearby community names were checked against El Paso County sources. No street address, business hours, ratings, or reviews are fabricated.

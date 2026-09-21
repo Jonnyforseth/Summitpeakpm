@@ -63,7 +63,7 @@ test('experience selection, return visits, switching, and privacy access', async
   dismiss.dialog.events.cancel({ preventDefault() {} });
   assert.equal(dismiss.dialog.open, false);
   assert.equal(dismiss.saved(), 'overview');
-  assert.equal(dismiss.get('[data-open-audience]').focused, true);
+  assert.equal(dismiss.get('.menu-toggle').focused, true);
   assert.equal((await experience({ saved: 'overview' })).dialog.open, false);
   assert.equal((await experience({ pathname: '/privacy/' })).dialog.open, false);
   const deep = await experience({ pathname: '/guides/one-month-rent-protection/', saved: 'owners' });

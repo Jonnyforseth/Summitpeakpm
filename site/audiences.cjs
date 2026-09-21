@@ -33,7 +33,7 @@ const configs = {
 const selector = `<dialog id="audience-dialog" aria-labelledby="audience-title" aria-describedby="audience-description"><button class="audience-close" type="button" aria-label="Close experience selection">×</button><img src="/assets/mark.svg" width="68" height="56" alt=""><p class="eyebrow green">WELCOME TO SUMMIT PEAK</p><h2 id="audience-title" tabindex="-1" autofocus>Let’s make this<br><em>about you.</em></h2><p id="audience-description">How can we help? Choose the experience that fits your next step.</p><div class="audience-options"><a href="/renters/" data-select-audience="renters"><span class="choice-icon" aria-hidden="true">⌂</span><strong>I’m a renter</strong><span>Find a home, plan a move, or get help with your rental.</span><b>Explore renting <span aria-hidden="true">↗</span></b></a><a href="/owners/" data-select-audience="owners"><span class="choice-icon" aria-hidden="true">◇</span><strong>I’m an owner / landlord</strong><span>Manage a property, find renters, and simplify ownership.</span><b>Explore property management <span aria-hidden="true">↗</span></b></a></div><p class="audience-footnote">You can switch at any time. We remember your choice for this tab.</p><button class="audience-skip" type="button">Not sure yet? Explore the main site</button></dialog>`;
 
 function bar(audience) {
-  return `<div class="audience-bar"><span data-audience-label>${audience ? configs[audience].label : 'Your Summit Peak experience'}</span><button type="button" data-open-audience>Change experience <span aria-hidden="true">⇄</span></button></div>`;
+  return `<div class="navigation-extras"><div class="audience-bar"><span data-audience-label>${audience ? configs[audience].label : 'Your Summit Peak experience'}</span><button type="button" data-open-audience>Change experience <span aria-hidden="true">⇄</span></button></div><p class="navigation-note">Veteran owned &amp; operated</p></div>`;
 }
 
 function scopeLinks(html, audience) {
@@ -56,8 +56,8 @@ function decorate(html, audience = '') {
     html = scopeLinks(html, audience);
     html = html.replace('<body>', `<body data-audience="${audience}">`);
   }
-  html = html.replace('</head>', '<link rel="stylesheet" href="/audience.css"><script src="/audience-state.js" defer></script><script src="/audience.js" defer></script></head>');
-  html = html.replace('</header>', '</header>' + bar(audience));
+  html = html.replace('</head>', '<link rel="stylesheet" href="/audience.css"><link rel="stylesheet" href="/header.css"><script src="/audience-state.js" defer></script><script src="/audience.js" defer></script></head>');
+  html = html.replace(/(<nav id="navigation"[^>]*>[\s\S]*?)(<\/nav>)/, '$1' + bar(audience) + '$2');
   html = html.replace('</body>', selector + '</body>');
   return html;
 }

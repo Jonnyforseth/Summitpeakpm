@@ -18,6 +18,9 @@ document.addEventListener('click', event => {
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && navigation.classList.contains('open')) { closeMenu(); menuButton.focus(); }
 });
+document.addEventListener('focusin', event => {
+  if (navigation.classList.contains('open') && !navigation.contains(event.target) && !menuButton.contains(event.target)) closeMenu();
+});
 window.matchMedia('(min-width: 1001px)').addEventListener('change', closeMenu);
 document.querySelectorAll('[data-interest]').forEach(link => link.addEventListener('click', () => {
   const interest = document.querySelector('#interest');

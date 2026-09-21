@@ -1,0 +1,67 @@
+/* One compact sticky row. Navigation and audience controls share its menu. */
+:root { --header-height: 72px; }
+html { scroll-padding-top: calc(var(--header-height) + 16px); }
+.site-header {
+  height: var(--header-height);
+  padding: 0 5%;
+  gap: 20px;
+  background: #f8f7f2f5;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px #243a3105;
+}
+.site-header .brand { gap: 10px; }
+.site-header .brand img { width: 36px; height: 34px; }
+.site-header .brand > span { font-size: 16px; line-height: 1.2; letter-spacing: 2px; }
+.site-header .brand small { font-size: 8px; letter-spacing: 2px; margin-top: 4px; }
+.header-actions { display: flex; align-items: center; gap: 24px; margin-left: auto; }
+.header-call { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.header-call:hover { text-decoration: underline; text-underline-offset: 4px; }
+.site-header .menu-toggle {
+  display: flex; flex-direction: row; align-items: center; justify-content: center;
+  width: auto; height: 44px; padding: 10px 12px; gap: 12px;
+  border: 1px solid var(--line); border-radius: 5px; background: transparent; color: var(--ink);
+}
+.menu-toggle b { font-size: 13px; font-weight: 500; }
+.menu-toggle i { display: flex; flex-direction: column; gap: 7px; }
+.site-header .menu-toggle span { height: 1px; width: 20px; background: var(--ink); transition: transform .2s; }
+.menu-toggle[aria-expanded=true] span:first-child { transform: translateY(4px) rotate(45deg); }
+.menu-toggle[aria-expanded=true] span:last-child { transform: translateY(-4px) rotate(-45deg); }
+.site-header nav {
+  display: none; position: absolute; top: calc(100% + 8px); right: 5%; left: auto;
+  width: min(360px, calc(100% - 32px)); max-height: calc(100svh - var(--header-height) - 24px);
+  overflow-y: auto; overscroll-behavior: contain; padding: 18px; gap: 2px;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: 0 16px 40px #14271f26; font-size: 15px;
+}
+.site-header nav.open { display: flex; flex-direction: column; align-items: stretch; }
+.site-header nav > a:not(.button) { display: block; padding: 10px 12px; min-height: 44px; border-radius: 4px; }
+.site-header nav > a:not(.button):hover { background: #e9edde; }
+.site-header nav > a:not(.button)::after { display: none; }
+.site-header .nav-cta { margin: 10px 0 0; min-height: 44px; padding: 12px; font-size: 14px; }
+.navigation-extras { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 12px; }
+.site-header .audience-bar {
+  position: static; min-height: 0; padding: 0; border: 0; background: none;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0;
+}
+.site-header .audience-bar > span { max-width: none; font-size: 12px; line-height: 1.6; }
+.site-header .audience-bar button { min-height: 44px; padding: 6px 0; font-size: 13px; text-align: left; }
+.site-header .navigation-note { margin: 6px 0 0; color: var(--muted); font-size: 11px; }
+.qa-section details, .article-body section { scroll-margin-top: 16px; }
+.article-toc { top: calc(var(--header-height) + 24px); }
+@media (max-width: 760px) {
+  :root { --header-height: 64px; }
+  .site-header { padding: 0 16px; gap: 12px; }
+  .header-actions { gap: 14px; }
+  .site-header .brand > span { font-size: 14px; letter-spacing: 1.5px; }
+  .site-header .brand small { font-size: 7px; letter-spacing: 1.4px; }
+  .header-call { font-size: 12px; }
+  .site-header .menu-toggle { width: 44px; padding: 10px; }
+  .menu-toggle b { display: none; }
+  .site-header nav { right: 16px; }
+}
+@media (max-width: 440px) {
+  .site-header .brand img { display: none; }
+  .site-header { padding: 0 14px; gap: 8px; }
+  .header-actions { gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .site-header .menu-toggle span { transition: none; } }
